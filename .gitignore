@@ -1,0 +1,14 @@
+# Python virtual environment
+venv/
+
+# Data folder with CSV/PDF files
+Data/
+
+# Screenshots folder
+screenshots/
+
+# Local environment variables
+.env
+
+# Files you don't want in repo
+screenshot.py
