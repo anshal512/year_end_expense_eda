@@ -54,9 +54,9 @@ def load_csv_to_postgres(csv_path, table_name):
 
         # Load into Postgres
         df.to_sql(table_name, engine, if_exists='append', index=False)
-        print(f"✅ SUCCESS: Data from {csv_path} loaded into table '{table_name}'")
+        print(f" SUCCESS: Data from {csv_path} loaded into table '{table_name}'")
     except Exception as e:
-        print(f"❌ FAILURE: Could not load {csv_path} into '{table_name}': {e}")
+        print(f" FAILURE: Could not load {csv_path} into '{table_name}': {e}")
 
 # Find the latest CSV file for given prefix
 def find_latest_csv(prefix):

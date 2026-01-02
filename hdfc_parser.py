@@ -4,19 +4,19 @@ from datetime import datetime
 import os
 
 # -----------------------------
-# 1️⃣ Path to your Excel file
+#  Path to your Excel file
 # -----------------------------
-xls_path = "Data/Hdfc_statement.xls"  # Update if needed
+xls_path = "Data/Hdfc_statement.xls"  
 if not os.path.exists(xls_path):
     raise FileNotFoundError(f"{xls_path} does not exist!")
 
 # -----------------------------
-# 2️⃣ Load Excel without header to detect actual header row
+# 2 Load Excel without header to detect actual header row
 # -----------------------------
 df_raw = pd.read_excel(xls_path, header=None, dtype=str)
 
 # -----------------------------
-# 3️⃣ Robust header detection
+# 3 Robust header detection
 # Header row must contain BOTH 'Date' and 'Narration'
 # -----------------------------
 header_row_idx = df_raw[
@@ -26,12 +26,12 @@ header_row_idx = df_raw[
 print("Header found at row:", header_row_idx)
 
 # -----------------------------
-# 4️⃣ Read Excel again with proper header
+# 4 Read Excel again with proper header
 # -----------------------------
 df = pd.read_excel(xls_path, header=header_row_idx, dtype=str)
 
 # -----------------------------
-# 5️⃣ Normalize column names (strip, lowercase)
+# 5 Normalize column names (strip, lowercase)
 # -----------------------------
 df.columns = df.columns.str.strip().str.lower()
 print("Columns detected:", df.columns.tolist())
@@ -42,17 +42,17 @@ value_dt_col = 'value dt'  # if exists
 numeric_cols = ['withdrawal amt.', 'deposit amt.', 'closing balance']
 
 # -----------------------------
-# 6️⃣ Drop completely empty rows
+# 6 Drop completely empty rows
 # -----------------------------
 df = df.dropna(how='all')
 
 # -----------------------------
-# 7️⃣ Remove top dummy rows with all '*' or blank
+# 7 Remove top dummy rows with all '*' or blank
 # -----------------------------
 df = df[~df.apply(lambda row: row.astype(str).str.match(r'^\*+$').all(), axis=1)]
 
 # -----------------------------
-# 8️⃣ Remove footer rows
+# 8 Remove footer rows
 # Keep only rows up to last valid 'date'
 # -----------------------------
 df['date_parsed'] = pd.to_datetime(df[date_col], errors='coerce')
@@ -61,21 +61,21 @@ df = df.loc[:last_valid_idx]
 df = df.drop(columns=['date_parsed'])
 
 # -----------------------------
-# 9️⃣ Clean numeric columns (remove commas, convert to float)
+# 9 Clean numeric columns (remove commas, convert to float)
 # -----------------------------
 for col in numeric_cols:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col].astype(str).str.replace(",", "").str.strip(), errors='coerce')
 
 # -----------------------------
-# 🔟 Format date columns uniformly
+# 10 Format date columns uniformly
 # -----------------------------
 for col in [date_col, value_dt_col]:
     if col in df.columns:
         df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%d-%m-%y')
 
 # -----------------------------
-# 1️⃣1️⃣ Make columns Postgres-friendly
+# 11 Make columns Postgres-friendly
 # -----------------------------
 df.columns = df.columns.str.strip() \
     .str.lower() \
@@ -85,10 +85,10 @@ df.columns = df.columns.str.strip() \
 print("Columns after rename:", df.columns.tolist())
 
 # -----------------------------
-# 1️⃣2️⃣ Save cleaned CSV with timestamp
+# 12 Save cleaned CSV with timestamp
 # -----------------------------
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 output_csv = f"Data/hdfc_clean_{timestamp}.csv"
 df.to_csv(output_csv, index=False, quoting=1)  # quoting=1 -> csv.QUOTE_ALL
 
-print(f"\n✅ Clean CSV file created successfully: {output_csv}")
+print(f"\nClean CSV file created successfully: {output_csv}")
